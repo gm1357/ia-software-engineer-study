@@ -47,15 +47,27 @@ async function trainModel(inputXs, outputYs) {
   return model;
 }
 
+async function predict(model, person) {
+  // transform array to tensor (tfjs)
+  const tfInput = tf.tensor2d(person);
+
+  // make prediction (output will be a vector of 3 probabilities)
+  console.log("Making prediction...");
+  const pred = model.predict(tfInput);
+  const predArray = await pred.array();
+
+  return predArray[0].map((prob, index) => ({ prob, index }));
+}
+
 // Exemplo de pessoas para treino (cada pessoa com idade, cor e localização)
 // const pessoas = [
-//     { nome: "Erick", idade: 30, cor: "azul", localizacao: "São Paulo" },
-//     { nome: "Ana", idade: 25, cor: "vermelho", localizacao: "Rio" },
-//     { nome: "Carlos", idade: 40, cor: "verde", localizacao: "Curitiba" }
+//     { name: "Erick", age: 30, color: "blue", location: "São Paulo" },
+//     { name: "Ana", age: 25, color: "red", location: "Rio" },
+//     { name: "Carlos", age: 40, color: "green", location: "Curitiba" }
 // ];
 
 // Vetores de entrada com valores já normalizados e one-hot encoded
-// Ordem: [idade_normalizada, azul, vermelho, verde, São Paulo, Rio, Curitiba]
+// Ordem: [age_normalized, blue, red, green, São Paulo, Rio, Curitiba]
 // const tensorPessoas = [
 //     [0.33, 1, 0, 0, 1, 0, 0], // Erick
 //     [0, 0, 1, 0, 0, 1, 0],    // Ana
@@ -83,4 +95,29 @@ const tensorLabels = [
 const inputXs = tf.tensor2d(tensorPessoasNormalizado);
 const outputYs = tf.tensor2d(tensorLabels);
 
-const model = trainModel(inputXs, outputYs);
+const model = await trainModel(inputXs, outputYs);
+
+const person = { name: "ted", age: 28, color: "green", location: "Curitiba" };
+
+// normalize age
+// age_min = 25, age_max = 40 -> (28 - 25) / (40 - 25) = 0.2
+
+const tensorPersonNormalized = [
+  [
+    0.2, // normalized age
+    0, // color blue
+    0, // color red
+    1, // color green
+    0, // location São Paulo
+    0, // location Rio
+    1, // location Curitiba
+  ],
+];
+
+const predictions = await predict(model, tensorPersonNormalized);
+const results = predictions
+  .sort((a, b) => b.prob - a.prob)
+  .map((p) => `${labelsNomes[p.index]} (${(p.prob * 100).toFixed(2)}%)`)
+  .join("\n");
+
+console.log(results);
