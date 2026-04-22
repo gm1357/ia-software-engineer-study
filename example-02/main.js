@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     spritesheet: 'sprites.json'
   });
   await game.load();
+  game.pause();
   await main(game);
 
 }, false);

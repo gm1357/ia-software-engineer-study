@@ -9,6 +9,12 @@ export default async function main(game) {
   worker.onmessage = ({ data }) => {
     const { type, x, y } = data;
 
+    if (type === 'model-loaded') {
+      console.log('🧠 Model loaded');
+      game.pause();
+      return;
+    }
+
     if (type === 'prediction') {
       console.log(`🎯 AI predicted at: (${x}, ${y})`);
       container.updateHUD(data);
@@ -20,7 +26,6 @@ export default async function main(game) {
       game.handleClick({
         global: position,
       });
-
     }
 
   };
