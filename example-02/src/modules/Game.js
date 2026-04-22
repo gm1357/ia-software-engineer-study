@@ -242,7 +242,7 @@ class Game {
       width: window.innerWidth,
       height: window.innerHeight,
       background: BLUE_SKY_COLOR,
-    })
+    });
     document.body.appendChild(this.app.canvas);
 
     this.textures = (await Assets.load(this.spritesheet)).textures;
@@ -412,7 +412,7 @@ class Game {
     this.wave = 0;
 
     this.gameStatus = this.level.title;
-    await this.stage.preLevelAnimation()
+    await this.stage.preLevelAnimation();
     this.gameStatus = '';
     this.startWave();
   }

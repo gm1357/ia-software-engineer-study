@@ -4,7 +4,7 @@
   "description": "Duckhunt implemented in JS",
   "scripts": {
     "gulp": "gulp",
-    "lint": "eslint src/**/*.js",
+    "lint": "eslint src/**/*.js machine-learning/**/*.js",
     "start": "webpack-dev-server",
     "build": "webpack",
     "audio": "gulp audio",
@@ -28,6 +28,7 @@
     "@pixi/text": "^7.4.3",
     "audiosprite": "^0.6.0",
     "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^10.0.0",
     "babel-preset-es2015": "^6.22.0",
     "bluebird": "^3.7.2",

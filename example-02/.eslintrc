@@ -3,7 +3,11 @@
     "./eslint/eslint-defaults.json",
     "./eslint/eslint-babel.json"
   ],
-  "env" : {
+  "env": {
     "browser": true
+  },
+  "rules": {
+    "no-console": "off",
+    "space-before-function-paren": "off"
   }
 }
