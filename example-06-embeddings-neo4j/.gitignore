@@ -1,0 +1,4 @@
+.env
+node_modules/
+import/
+neo4j/
