@@ -1,0 +1,19 @@
+{
+  "name": "01-smart-model-router-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --inspect --watch src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "fastify": "^5.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.4"
+  }
+}
