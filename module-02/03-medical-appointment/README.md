@@ -5,6 +5,7 @@ Demonstration of **prompt engineering** with LangChain using structured outputs 
 ## 🎯 Goals
 
 This project exemplifies:
+
 - **Structured Outputs**: Using Zod schemas to prevent hallucinations
 - **Prompt Chaining**: Three-stage pipeline with quality feedback loop
 - **Minimal Code**: Let AI agents review each other instead of complex logic
@@ -55,33 +56,35 @@ prompts/
 tests/
   └── article-generator.test.ts  # Real API integration test
 ```
-  │   ├── graph.ts          # StateGraph definition with co-located types
-  │   ├── factory.ts        # Graph creation factory
-  │   └── nodes/            # LangGraph nodes (workflow steps)
-  │       ├── outline.node.ts    # Generate article structure + parsing
-  │       ├── research.node.ts   # Research sections in parallel
-  │       ├── write.node.ts      # Write sections + assembly
-  │       └── review.node.ts     # Polish final article
-  ├── services/
-  │   └── openrouter-service.ts  # OpenRouter SDK wrapper (implements LLMClient)
-  └── utils/
-      └── prompt-loader.ts  # Load prompts from template files
 
-prompts/                    # Prompt templates with variables
-  ├── outline.txt           # Section structure generation
-  ├── research.txt          # Research individual sections
-  ├── write-section.txt     # Write section content
-  └── review.txt            # Review and improve
+│ ├── graph.ts # StateGraph definition with co-located types
+│ ├── factory.ts # Graph creation factory
+│ └── nodes/ # LangGraph nodes (workflow steps)
+│ ├── outline.node.ts # Generate article structure + parsing
+│ ├── research.node.ts # Research sections in parallel
+│ ├── write.node.ts # Write sections + assembly
+│ └── review.node.ts # Polish final article
+├── services/
+│ └── openrouter-service.ts # OpenRouter SDK wrapper (implements LLMClient)
+└── utils/
+└── prompt-loader.ts # Load prompts from template files
+
+prompts/ # Prompt templates with variables
+├── outline.txt # Section structure generation
+├── research.txt # Research individual sections
+├── write-section.txt # Write section content
+└── review.txt # Review and improve
 
 tests/
-  └── article-generator.test.ts  # Graph workflow tests
-```
+└── article-generator.test.ts # Graph workflow tests
+
+````
 
 ## Installation
 
 ```bash
 npm install
-```
+````
 
 ## Configuration
 
@@ -130,6 +133,7 @@ npm test
 ### 1. Outline Node
 
 Generates article structure:
+
 - Title
 - Introduction
 - Sections with key points
@@ -140,9 +144,10 @@ Generates article structure:
 ### 2. Research Node
 
 Researches all sections **in parallel**:
+
 ```typescript
-const researchPromises = sections.map(section =>
-  llmClient.generate(researchPrompt)
+const researchPromises = sections.map((section) =>
+  llmClient.generate(researchPrompt),
 );
 const results = await Promise.all(researchPromises);
 ```
@@ -152,6 +157,7 @@ const results = await Promise.all(researchPromises);
 ### 3. Write Sections Node
 
 Writes each section **sequentially** using research:
+
 - Loops through sections
 - Uses section research + key points
 - Calculates word count
@@ -162,6 +168,7 @@ Writes each section **sequentially** using research:
 ### 4. Review Node
 
 Reviews and improves final article:
+
 - Checks tone and style
 - Improves transitions
 - Ensures consistency
@@ -174,6 +181,7 @@ Reviews and improves final article:
 ### StateGraph
 
 Defines the workflow with typed state:
+
 ```typescript
 const ArticleStateAnnotation = Annotation.Root({
   topic: Annotation<string>,
@@ -190,13 +198,14 @@ const ArticleStateAnnotation = Annotation.Root({
 ### Node Functions
 
 Each node receives state and returns partial state updates:
+
 ```typescript
 export const createOutlineNode = (llmClient: LLMClient) => {
   return async (state: GraphState): Promise<Partial<GraphState>> => {
     const outline = await generateOutline(state.topic);
     return {
       outline,
-      currentStep: 'outline_completed',
+      currentStep: "outline_completed",
     };
   };
 };
@@ -206,15 +215,15 @@ export const createOutlineNode = (llmClient: LLMClient) => {
 
 ```typescript
 const workflow = new StateGraph({ stateSchema: ArticleStateAnnotation })
-  .addNode('generateOutline', outlineNode)
-  .addNode('conductResearch', researchNode)
-  .addNode('writeSections', writeSectionsNode)
-  .addNode('reviewArticle', reviewNode)
-  .addEdge(START, 'generateOutline')
-  .addEdge('generateOutline', 'conductResearch')
-  .addEdge('conductResearch', 'writeSections')
-  .addEdge('writeSections', 'reviewArticle')
-  .addEdge('reviewArticle', END);
+  .addNode("generateOutline", outlineNode)
+  .addNode("conductResearch", researchNode)
+  .addNode("writeSections", writeSectionsNode)
+  .addNode("reviewArticle", reviewNode)
+  .addEdge(START, "generateOutline")
+  .addEdge("generateOutline", "conductResearch")
+  .addEdge("conductResearch", "writeSections")
+  .addEdge("writeSections", "reviewArticle")
+  .addEdge("reviewArticle", END);
 
 return workflow.compile();
 ```
@@ -228,15 +237,16 @@ class MockLLMClient implements LLMClient {
   responses: Map<string, string>;
 
   async generate(prompt: string): Promise<string> {
-    if (prompt.includes('outline')) return mockOutline;
-    if (prompt.includes('Research')) return mockResearch;
-    if (prompt.includes('Write')) return mockSection;
-    if (prompt.includes('Review')) return mockReview;
+    if (prompt.includes("outline")) return mockOutline;
+    if (prompt.includes("Research")) return mockResearch;
+    if (prompt.includes("Write")) return mockSection;
+    if (prompt.includes("Review")) return mockReview;
   }
 }
 ```
 
 Tests verify:
+
 - ✅ Complete article generation through graph
 - ✅ Multiple LLM calls in chain
 - ✅ Correct state flow through all nodes
@@ -254,6 +264,7 @@ Tests verify:
 ### Dependency Injection
 
 Nodes receive dependencies as parameters:
+
 ```typescript
 createOutlineNode(llmClient: LLMClient, config: ArticleConfig)
 ```
@@ -261,6 +272,7 @@ createOutlineNode(llmClient: LLMClient, config: ArticleConfig)
 ### Immutable State
 
 Nodes return new state objects, never mutate:
+
 ```typescript
 return {
   ...state,
@@ -271,8 +283,9 @@ return {
 ### Prompt Templates
 
 Prompts stored in files, not code:
+
 ```typescript
-const prompt = await PromptLoader.load('outline', {
+const prompt = await PromptLoader.load("outline", {
   topic: state.topic,
   minSections: config.minSections,
   maxSections: config.maxSections,

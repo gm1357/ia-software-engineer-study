@@ -1,4 +1,4 @@
-import { buildAppointmentGraph } from './graph.ts';
+import { buildAppointmentGraph } from "./graph.ts";
 
 export function buildGraph() {
   return buildAppointmentGraph();
