@@ -23,7 +23,7 @@ export const config: ModelConfig = {
   apiKey: process.env.OPENROUTER_API_KEY!,
   httpReferer: "",
   xTitle: "IA Devs - Prompt Chaining Article Generator",
-  models: ["inclusionai/ling-2.6-flash"],
+  models: ["arcee-ai/trinity-mini"],
   provider: {
     sort: {
       by: "throughput", // Route to model with highest throughput (fastest response)

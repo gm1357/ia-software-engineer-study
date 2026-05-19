@@ -1,15 +1,50 @@
+import { type AppointmentService } from "../../services/appointmentService.ts";
 import type { GraphState } from "../graph.ts";
+import { z } from "zod/v3";
 
-export function createSchedulerNode() {
-  return async (state: GraphState): Promise<GraphState> => {
+const ScheduleRequiredFieldsSchema = z.object({
+  professionalId: z.number({
+    required_error: "Professional ID is required for scheduling",
+  }),
+  datetime: z.string({ required_error: "Datetime is required for scheduling" }),
+  patientName: z.string({
+    required_error: "Patient name is required for scheduling",
+  }),
+});
+
+export function createSchedulerNode(appointmentService: AppointmentService) {
+  return async (state: GraphState): Promise<Partial<GraphState>> => {
     console.log(`📅 Scheduling appointment...`);
 
     try {
+      const validation = ScheduleRequiredFieldsSchema.safeParse(state);
+
+      if (!validation.success) {
+        const errorMessages = validation.error.errors
+          .map((e) => e.message)
+          .join("; ");
+        console.log(
+          `❌ Validation failed due to missing fields: ${errorMessages}`,
+        );
+        return {
+          actionSuccess: false,
+          actionError: errorMessages,
+        };
+      }
+
+      const appointment = appointmentService.bookAppointment(
+        validation.data.professionalId,
+        new Date(validation.data.datetime),
+        validation.data.patientName,
+        state.reason ?? "No reason provided",
+      );
+
       console.log(`✅ Appointment scheduled successfully`);
 
       return {
         ...state,
         actionSuccess: true,
+        appointmentData: appointment,
       };
     } catch (error) {
       console.log(
