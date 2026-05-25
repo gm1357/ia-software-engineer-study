@@ -23,7 +23,7 @@ async function main(): Promise<void> {
     console.log("═".repeat(60));
     console.log('\nDigite suas mensagens abaixo. Digite "exit" para sair.\n');
 
-    const { graph, memoryService } = await buildGraph();
+    const { graph, memoryService, preferencesService } = await buildGraph();
 
     const { userId } = parseArgs();
     const threadId = userId ? `user-${userId}` : `user-${Date.now()}`;
@@ -40,14 +40,20 @@ async function main(): Promise<void> {
     const namespace = ["memories", threadId];
     let userContext: string | undefined;
 
-    if (memoryService.store) {
-      const existingMemories = await memoryService.store.search(namespace, {
-        limit: 10,
-      });
-      if (existingMemories?.length > 0) {
-        userContext = existingMemories.map((m: any) => m.value.data).join("\n");
-        console.log(`📚 Informações do usuário carregadas:\n${userContext}\n`);
-      }
+    // if (memoryService.store) {
+    //   const existingMemories = await memoryService.store.search(namespace, {
+    //     limit: 10,
+    //   });
+    //   if (existingMemories?.length > 0) {
+    //     userContext = existingMemories.map((m: any) => m.value.data).join("\n");
+    //     console.log(`📚 Informações do usuário carregadas:\n${userContext}\n`);
+    //   }
+    // }
+    userContext = await preferencesService.getBasicInfo(
+      threadId || "anonymous",
+    );
+    if (userContext) {
+      console.log(`📚 user informations loaded:\n${userContext}\n`);
     }
 
     try {

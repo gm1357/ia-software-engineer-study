@@ -11,6 +11,8 @@ import {
   routeAfterChat,
   routeAfterSavePreferences,
 } from "./nodes/edgeConditions.ts";
+import { PreferencesService } from "../services/preferencesService.ts";
+import { type MemoryService } from "../services/memoryService.ts";
 
 const ChatStateAnnotation = z.object({
   messages: withLangGraph(z.custom<BaseMessage[]>(), MessagesZodMeta),
@@ -23,10 +25,14 @@ const ChatStateAnnotation = z.object({
 
 export type GraphState = z.infer<typeof ChatStateAnnotation>;
 
-export function buildChatGraph(llmClient: OpenRouterService) {
+export function buildChatGraph(
+  llmClient: OpenRouterService,
+  preferencesService: PreferencesService,
+  memoryService: MemoryService,
+) {
   const graph = new StateGraph(ChatStateAnnotation)
-    .addNode("chat", createChatNode(llmClient))
-    .addNode("savePreferences", createSavePreferencesNode())
+    .addNode("chat", createChatNode(llmClient, preferencesService))
+    .addNode("savePreferences", createSavePreferencesNode(preferencesService))
     .addNode("summarize", createSummarizationNode(llmClient))
 
     .addEdge(START, "chat")
@@ -44,5 +50,8 @@ export function buildChatGraph(llmClient: OpenRouterService) {
 
     .addEdge("summarize", END);
 
-  return graph.compile();
+  return graph.compile({
+    checkpointer: memoryService.checkpointer,
+    store: memoryService.store,
+  });
 }
