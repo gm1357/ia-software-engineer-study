@@ -283,4 +283,28 @@ describe("Chat de Recomendação Musical - Testes E2E", () => {
       "A segunda thread deve ter acesso às preferências da primeira",
     );
   });
+
+  it("Deve realizar resumo", async () => {
+    const userId = "test-taylor";
+    const threadId = `${userId}-${Date.now()}`;
+    const config = {
+      configurable: { thread_id: threadId },
+      context: { userId },
+    };
+
+    await graph.invoke(
+      {
+        messages: [
+          new HumanMessage("Sou o Gabriel"),
+          new HumanMessage("Tenho 31 anos"),
+          new HumanMessage("Gosto de rock"),
+          new HumanMessage("Gosto de Daft Punk"),
+          new HumanMessage("Gosto de músicas animadas"),
+          new HumanMessage("Não gosto de sertanejo"),
+        ],
+        userId,
+      },
+      config,
+    );
+  });
 });
