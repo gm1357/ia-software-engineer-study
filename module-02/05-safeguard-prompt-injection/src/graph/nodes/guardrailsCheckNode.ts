@@ -1,19 +1,27 @@
-import { OpenRouterService } from '../../services/openrouterService.ts';
-import type { GraphState } from '../state.ts';
+import { OpenRouterService } from "../../services/openrouterService.ts";
+import type { GraphState } from "../state.ts";
 
-export const createGuardrailsCheckNode = (openRouterService: OpenRouterService) => {
-    return async (state: GraphState): Promise<Partial<GraphState>> => {
-        try {
+export const createGuardrailsCheckNode = (
+  openRouterService: OpenRouterService,
+) => {
+  return async (state: GraphState): Promise<Partial<GraphState>> => {
+    try {
+      const lastMessage = state.messages?.at(-1)?.text ?? "";
 
-            return {
-                ...state,
-            };
-        } catch (error) {
-            console.error('Guardrails check failed:', error);
+      return {
+        guardrailCheck: {
+          safe: true,
+        },
+      };
+    } catch (error) {
+      console.error("Guardrails check failed:", error);
 
-            return {
-                ...state,
-            };
-        }
+      return {
+        guardrailCheck: {
+          safe: false,
+          reason: "Guardrails service unavailable - request blocked for safety",
+        },
+      };
     }
-}
+  };
+};
