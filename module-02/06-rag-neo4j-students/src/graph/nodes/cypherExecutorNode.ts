@@ -6,6 +6,7 @@ export function createCypherExecutorNode(neo4jService: Neo4jService) {
     try {
       return {
         ...state,
+        isMultiStep: false,
       };
     } catch (error) {
       console.error(
