@@ -2,7 +2,7 @@ export const config = {
   apiKey: process.env.OPENROUTER_API_KEY!,
   httpReferer: "",
   xTitle: "IA Devs - Sales Analytics Reporter",
-  models: ["arcee-ai/trinity-large-preview:free"],
+  models: ["nvidia/nemotron-3-super-120b-a12b:free"],
   provider: {
     sort: {
       by: "throughput", // Route to model with highest throughput (fastest response)

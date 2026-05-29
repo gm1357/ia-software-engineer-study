@@ -20,6 +20,7 @@ app
       // question: "Find courses that students typically purchase after 'Machine Learning em Navegadores'", // complex
       // question: 'Show me the revenue distribution across all courses',
       // question: 'Which users have progressed over 80%?',
+      // question: "How many courses there are?", // simple
     },
   })
   .then((response) => {
