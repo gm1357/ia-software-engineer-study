@@ -7,10 +7,10 @@ await app.listen({ port: 3000, host: "0.0.0.0" });
 console.log(`Server is running on http://0.0.0.0:3000`);
 
 const salesData = readFileSync("./data/sales.csv", "utf-8");
-// const salesData = readFileSync('./data/sales-complete.csv', 'utf-8');
+// const salesData = readFileSync("./data/sales-complete.csv", "utf-8");
 
 const question = `
-Rank the top 5 most sold products:
+Rank the top 5 most sold products. Here is the CSV data:
 
 ${salesData}
 `;
