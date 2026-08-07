@@ -19,4 +19,10 @@ export class CustomerHttpClient {
     });
     return res.json() as Promise<CreatedCustomer>;
   }
+
+  async getCustomerById(id: string): Promise<Customer | null> {
+    const res = await fetch(`${this.baseUrl}/customers/${id}`);
+    if (res.status === 404) return null;
+    return res.json() as Promise<Customer>;
+  }
 }
