@@ -7,3 +7,5 @@ export const CustomerSchema = z.object({
 });
 
 export type Customer = z.infer<typeof CustomerSchema>;
+
+export type CreatedCustomer = { message: string; id: string };

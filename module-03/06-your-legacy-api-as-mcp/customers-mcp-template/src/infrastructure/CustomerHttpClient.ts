@@ -1,4 +1,4 @@
-import type { Customer } from "../domain/customer.ts";
+import type { CreatedCustomer, Customer } from "../domain/customer.ts";
 
 export class CustomerHttpClient {
   private baseUrl: string;
@@ -9,5 +9,14 @@ export class CustomerHttpClient {
   async listCustomers(): Promise<Customer[]> {
     const res = await fetch(`${this.baseUrl}/customers`);
     return res.json() as Promise<Customer[]>;
+  }
+
+  async createCustomer(customer: Omit<Customer, "_id">) {
+    const res = await fetch(`${this.baseUrl}/customers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(customer),
+    });
+    return res.json() as Promise<CreatedCustomer>;
   }
 }
