@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { CustomerService } from "../../application/cutomerService.ts";
+import { CustomerService } from "../../application/customerService.ts";
 import {
   type CustomerQuery,
   CustomerQuerySchema,

@@ -2,12 +2,12 @@ import { describe, it, after, before } from "node:test";
 import assert from "node:assert";
 import { createTestClient } from "../helpers.ts";
 import { Client } from "@modelcontextprotocol/sdk/client";
-import type { CreatedCustomer, Customer } from "../../src/domain/customer.ts";
+import type { CustomerMutation, Customer } from "../../src/domain/customer.ts";
 
 type CustomersResult = { structuredContent: { customers: Customer[] } };
 type CustomerResult = { structuredContent: { customer: Customer } };
-type CreateCustomerResult = {
-  structuredContent: CreatedCustomer;
+type CustomerMutationResult = {
+  structuredContent: CustomerMutation;
 };
 
 describe("Customer MCP Suite", () => {
@@ -40,13 +40,67 @@ describe("Customer MCP Suite", () => {
     const result = (await client.callTool({
       name: "create_customer",
       arguments: customer,
-    })) as unknown as CreateCustomerResult;
+    })) as unknown as CustomerMutationResult;
 
     assert.ok(result.structuredContent.id, "should contain id");
 
     assert.deepStrictEqual(
       result.structuredContent.message,
       `user ${customer.name} created!`,
+    );
+  });
+
+  it("should update a customer", async () => {
+    const createCustomer = {
+      name: "John",
+      phone: "12345-6789",
+    };
+    const createResult = (await client.callTool({
+      name: "create_customer",
+      arguments: createCustomer,
+    })) as unknown as CustomerMutationResult;
+
+    const updateCustomer = {
+      _id: createResult.structuredContent.id,
+      name: "Jane",
+      phone: "12345-6789",
+    };
+    const updateResult = (await client.callTool({
+      name: "update_customer",
+      arguments: updateCustomer,
+    })) as unknown as CustomerMutationResult;
+
+    assert.ok(updateResult.structuredContent.message, "should contain message");
+
+    assert.deepStrictEqual(
+      updateResult.structuredContent.id,
+      createResult.structuredContent.id,
+    );
+  });
+
+  it("should delete a customer", async () => {
+    const createCustomer = {
+      name: "John",
+      phone: "12345-6789",
+    };
+    const createResult = (await client.callTool({
+      name: "create_customer",
+      arguments: createCustomer,
+    })) as unknown as CustomerMutationResult;
+
+    const deleteCustomer = {
+      _id: createResult.structuredContent.id,
+    };
+    const deleteResult = (await client.callTool({
+      name: "delete_customer",
+      arguments: deleteCustomer,
+    })) as unknown as CustomerMutationResult;
+
+    assert.ok(deleteResult.structuredContent.message, "should contain message");
+
+    assert.deepStrictEqual(
+      deleteResult.structuredContent.id,
+      createResult.structuredContent.id,
     );
   });
 
@@ -58,7 +112,7 @@ describe("Customer MCP Suite", () => {
     (await client.callTool({
       name: "create_customer",
       arguments: customer,
-    })) as unknown as CreateCustomerResult;
+    })) as unknown as CustomerMutationResult;
 
     const result = (await client.callTool({
       name: "get_customer",
