@@ -3,6 +3,7 @@ import { deepStrictEqual, ok } from 'node:assert'
 import { runSeed } from '../config/seed.js'
 import { users } from '../config/users.js'
 import { REQUESTS_PER_MINUTE } from '../src/config.js'
+import { ADMIN_SUPER_SECRET } from '../src/auth.js'
 
 describe('API Workflow', () => {
     let _testServer
@@ -100,9 +101,7 @@ describe('API Workflow', () => {
     after(async () => _testServer.close())
 
 
-    describe.skip('POST /v1/auth/service-token', () => {
-        const ADMIN_SUPER_SECRET = 'AM I THE BOSS?'
-
+    describe('POST /v1/auth/service-token', () => {
         it('should return role and a UUID serviceToken for valid admin credentials', async () => {
             const res = await _testServer.inject({
                 method: 'POST',
@@ -150,8 +149,6 @@ describe('API Workflow', () => {
     })
 
     describe.skip('Service token - API access & rate limiting', () => {
-        const ADMIN_SUPER_SECRET = 'AM I THE BOSS?'
-
         it(`should allow API access and rate limit after ${REQUESTS_PER_MINUTE} requests with the service token`, async () => {
             const tokenRes = await _testServer.inject({
                 method: 'POST',

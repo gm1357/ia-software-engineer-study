@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 export const authUsers = [{
     username: 'erickwendel',
     password: '123123',
@@ -10,6 +12,8 @@ export const authUsers = [{
 }]
 
 export const JWT_SECRET = 'mysecretkey'
+export const ADMIN_SUPER_SECRET = 'supersecret'
+const issuedServiceTokens = new Map()
 
 export function initAuthRoute(fastify) {
     fastify.addHook('onRequest', async (request, reply) => {
@@ -20,6 +24,14 @@ export function initAuthRoute(fastify) {
         ]
 
         if (publicRoutes.includes(request.originalUrl)) {
+            return
+        }
+
+        const token = request.headers?.authorization?.replace(/bearer/i, '').trim()
+        const serviceUser = issuedServiceTokens.get(token)
+
+        if (serviceUser) {
+            request.user = serviceUser
             return
         }
 
@@ -73,6 +85,57 @@ export function initAuthRoute(fastify) {
             const token = fastify.jwt.sign({ username, role: user.role })
 
             return reply.send({ token })
+        }
+    )
+
+    fastify.post('/v1/auth/service-token',
+        {
+            schema: {
+                body: {
+                    type: 'object',
+                    required: ['username', 'password', 'adminSuperSecret'],
+                    properties: {
+                        username: { type: 'string' },
+                        password: { type: 'string' },
+                        adminSuperSecret: { type: 'string' },
+                    },
+                },
+                response: {
+                    200: {
+                        type: 'object',
+                        properties: {
+                            role: { type: 'string' },
+                            serviceToken: { type: 'string' },
+                        }, 
+                    },
+                    401: {
+                        type: 'object',
+                        properties: {
+                            message: { type: 'string' },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const { username, password, adminSuperSecret } = request.body
+            if (adminSuperSecret !== ADMIN_SUPER_SECRET) {
+                return reply.code(401).send({ message: 'Invalid adminSuperSecret' })
+            }
+
+            const user = authUsers.find(
+                user => user.username.toLocaleLowerCase() === username.toLocaleLowerCase() &&
+                user.password === password
+            )
+
+            if (!user) {
+                return reply.code(401).send({ message: 'Invalid credentials' })
+            }
+
+            const serviceToken = randomUUID()
+            issuedServiceTokens.set(serviceToken, { username: user.username, role: user.role })
+
+            return reply.send({ serviceToken, role: user.role })
         }
     )
 }

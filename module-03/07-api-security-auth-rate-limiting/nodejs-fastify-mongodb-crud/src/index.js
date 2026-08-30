@@ -227,7 +227,7 @@ if (!isTestEnv) {
 export const server = fastify
 
 
-// import { authUsers } from './auth.js'
+// import { authUsers, ADMIN_SUPER_SECRET } from './auth.js'
 
 // const adminUser = authUsers.at(0)
 // const memberUser = authUsers.at(1)
@@ -237,17 +237,22 @@ export const server = fastify
 
 // const authResponse = await fastify.inject({
 //     method: 'POST',
-//     url: `/v1/auth/login`,
-//     payload: user,
+//     url: `/v1/auth/service-token`,
+//     payload: {
+//         ...user,
+//         adminSuperSecret: ADMIN_SUPER_SECRET,
+//     },
 // })
-// const { token } = await authResponse.json()
-// console.log(token)
+// const { role, serviceToken } = await authResponse.json()
+// console.log(role, serviceToken)
+
+// // console.log(token)
 
 // const createCustomerResponse = await fastify.inject({
 //     method: 'POST',
 //     url: `/v1/customers`,
 //     headers: {
-//         'Authorization': `bearer ${token}`
+//         'Authorization': `bearer ${serviceToken}`
 //     },
 //     payload: { name: 'test', phone: 'test' },
 // })
