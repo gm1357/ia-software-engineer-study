@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import fastifyJwt from '@fastify/jwt'
 import { getDb } from './db.js'
 import { ObjectId } from 'mongodb'
+import { initAuthRoute, JWT_SECRET, requireRole } from './auth.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 if (!isTestEnv && !process.env.DB_NAME) {
@@ -10,6 +11,11 @@ if (!isTestEnv && !process.env.DB_NAME) {
 }
 
 const fastify = Fastify({})
+fastify.register(fastifyJwt, {
+    secret: JWT_SECRET,
+});
+
+initAuthRoute(fastify)
 
 const { dbClient, collections: { dbUsers } } = await getDb()
 
@@ -73,6 +79,7 @@ fastify.get('/v1/customers/:id', {
 })
 
 fastify.post('/v1/customers', {
+    preHandler: [ requireRole('admin') ],
     schema: {
         body: {
             type: 'object',
@@ -99,6 +106,7 @@ fastify.post('/v1/customers', {
 })
 
 fastify.put('/v1/customers/:id', {
+    preHandler: [ requireRole('admin') ],
     schema: {
         body: {
             type: 'object',
@@ -149,6 +157,7 @@ fastify.put('/v1/customers/:id', {
 })
 
 fastify.delete('/v1/customers/:id', {
+    preHandler: [ requireRole('admin') ],
     schema: {
         response: {
             200: {
