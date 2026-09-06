@@ -64,18 +64,18 @@ Two roles are available:
 
 The `/v1/auth/service-token` endpoint requires valid user credentials **plus** the `adminSuperSecret`. It returns the user's role and a unique UUID service token.
 
-The `adminSuperSecret` is: `AM I THE BOSS?`
+The `adminSuperSecret` is: `supersecret`
 
 ```bash
 # As admin
 curl -X POST http://localhost:9999/v1/auth/service-token \
   -H "Content-Type: application/json" \
-  -d '{"username": "erickwendel", "password": "123123", "adminSuperSecret": "AM I THE BOSS?"}'
+  -d '{"username": "erickwendel", "password": "123123", "adminSuperSecret": "supersecret"}'
 
 # As member
 curl -X POST http://localhost:9999/v1/auth/service-token \
   -H "Content-Type: application/json" \
-  -d '{"username": "ananeri", "password": "1234", "adminSuperSecret": "AM I THE BOSS?"}'
+  -d '{"username": "ananeri", "password": "1234", "adminSuperSecret": "supersecret"}'
 ```
 
 Response:

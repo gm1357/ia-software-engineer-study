@@ -10,7 +10,7 @@ export async function getServiceToken(): Promise<string> {
     body: JSON.stringify({
       username: 'erickwendel',
       password: '123123',
-      adminSuperSecret: 'AM I THE BOSS?',
+      adminSuperSecret: 'supersecret',
     }),
   })
   if (!res.ok) throw new Error(`Failed to get service token: ${res.status}`)
