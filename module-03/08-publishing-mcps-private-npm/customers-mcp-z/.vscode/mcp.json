@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "customers-mcp": {
+      "command": "npx",
+      "args": ["-y", "--registry", "http://localhost:4873", "@erickwendel/ew-customers-mcp@latest"],
+      // "args": ["-y", "@erickwendel/customers-mcp@latest"],
+      "env": {
+        "SERVICE_TOKEN": "2eebec83-7e17-4262-b079-01ae14720ffe"
+      },
+    }
+  }
+}
