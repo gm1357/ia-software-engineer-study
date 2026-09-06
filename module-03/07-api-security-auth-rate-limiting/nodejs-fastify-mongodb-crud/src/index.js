@@ -1,8 +1,9 @@
 import Fastify from 'fastify'
 import fastifyJwt from '@fastify/jwt'
+import fastifyRateLimit from '@fastify/rate-limit'
 import { getDb } from './db.js'
 import { ObjectId } from 'mongodb'
-import { initAuthRoute, JWT_SECRET, requireRole } from './auth.js';
+import { initAuthRoute, JWT_SECRET, rateLimitOptions, requireRole } from './auth.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 if (!isTestEnv && !process.env.DB_NAME) {
@@ -11,9 +12,10 @@ if (!isTestEnv && !process.env.DB_NAME) {
 }
 
 const fastify = Fastify({})
-fastify.register(fastifyJwt, {
+await fastify.register(fastifyJwt, {
     secret: JWT_SECRET,
 });
+await fastify.register(fastifyRateLimit, rateLimitOptions)
 
 initAuthRoute(fastify)
 

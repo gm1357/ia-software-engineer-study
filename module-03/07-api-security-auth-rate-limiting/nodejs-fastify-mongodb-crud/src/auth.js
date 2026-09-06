@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { REQUESTS_PER_MINUTE } from './config.js'
 
 export const authUsers = [{
     username: 'erickwendel',
@@ -14,6 +15,12 @@ export const authUsers = [{
 export const JWT_SECRET = 'mysecretkey'
 export const ADMIN_SUPER_SECRET = 'supersecret'
 const issuedServiceTokens = new Map()
+
+export const rateLimitOptions = {
+    max: REQUESTS_PER_MINUTE,
+    timeWindow: '1 minute',
+    keyGenerator: (request) => request.headers?.authorization?.replace(/bearer/i, '').trim() ?? request.ip,
+}
 
 export function initAuthRoute(fastify) {
     fastify.addHook('onRequest', async (request, reply) => {

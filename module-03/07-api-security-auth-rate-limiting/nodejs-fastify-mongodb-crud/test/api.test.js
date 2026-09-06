@@ -148,7 +148,7 @@ describe('API Workflow', () => {
         })
     })
 
-    describe.skip('Service token - API access & rate limiting', () => {
+    describe('Service token - API access & rate limiting', () => {
         it(`should allow API access and rate limit after ${REQUESTS_PER_MINUTE} requests with the service token`, async () => {
             const tokenRes = await _testServer.inject({
                 method: 'POST',
